@@ -105,7 +105,7 @@ namespace :web do
     else
       store = Sattva::Store.instance
       if store.init?
-        `puma -p #{store.get('http')['port']} --pidfile #{PID} -d config.ru`
+        `puma -p #{store.get('http')['port']} --pidfile #{PID} -e production -d config.ru`
         store.add_log 'Start!'
         puts 'Start success!'
       else
@@ -123,6 +123,17 @@ namespace :web do
     else
       puts 'Not started!'
     end
+  end
+
+  desc 'restart web server' 
+  task :restart do
+	  if File.exist?(PID)
+		  `kill -s SIGUSR2 $(cat #{PID})` 
+      	  Sattva::Store.instance.add_log 'Restart'
+		  puts 'Restart!'
+	  else
+		  puts "Haven't start!"
+	  end
   end
 
   desc 'web server status'
